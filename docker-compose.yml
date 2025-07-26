@@ -17,6 +17,6 @@ services:
     environment:
       - NGROK_AUTHTOKEN=${NGROK_AUTHTOKEN}
     ports:
-      - "4141:4040"
+      - "4242:4040"
     depends_on:
       - app
