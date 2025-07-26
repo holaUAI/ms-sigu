@@ -19,8 +19,11 @@ class Reunion {
         this.duracion_minutos = duracion_minutos;
     }
 
-    static async getAll(conexion) {
-        const [result] = await conexion.query(
+    // Método paginado
+    static async getAll(conexion, page = 1, limit = 20) {
+        const offset = (page - 1) * limit;
+
+        const [rows] = await conexion.query(
             `SELECT 
                 rz.idReunionZoom, 
                 rz.c_codfac, 
@@ -30,9 +33,23 @@ class Reunion {
                 rz.fechaInicioReunion, 
                 rz.fechaFinReunion, 
                 rz.duracion_minutos
-             FROM sga_reuniones_zoom AS rz`
+             FROM sga_reuniones_zoom AS rz
+             ORDER BY fechaInicioReunion ASC
+             LIMIT ? OFFSET ?`,
+            [limit, offset]
         );
-        return result;
+
+        // Contar total de registros
+        const [countResult] = await conexion.query(
+            `SELECT COUNT(*) AS total FROM sga_reuniones_zoom`
+        );
+
+        return {
+            data: rows,
+            total: countResult[0].total,
+            page,
+            pages: Math.ceil(countResult[0].total / limit),
+        };
     }
 }
 
