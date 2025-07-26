@@ -17,7 +17,6 @@ class Curso {
         );
         return result;
     }
-
 }
 
 export default Curso;
